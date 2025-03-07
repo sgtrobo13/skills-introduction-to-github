@@ -1,0 +1,101 @@
+# Linux_aliases
+# Date 20250302
+# Version 1
+
+# this goes in one (or both) of 2 places
+# If it is a multi-user system, place this in your $HOME/.bash_aliases
+# Be sure that your $HOME/.bash_profile references the $HOME/.bashrc 
+# Be sure that your $HOME/.bashrc references the $HOME/.bash_aliases 
+# For use by the root user (via sudo -i, sudo su, su -, or su), place it in the /root/.bash_aliases file
+# Include the following in the relevant .bashrc and .bash_profile file(s):
+##################################################
+## Source global definitions
+#if [ -f /etc/bashrc ]; then
+#        . /etc/bashrc
+#fi
+#
+## Source aliases and functions in bash_aliases
+#if [ -f ~/.bash_aliases ]; then
+#        . ~/.bash_aliases
+#fi
+##################################################
+
+## set pretty machine hostname
+pretty(){ hostnamectl set-hostname --pretty $1; }
+prettyprompt=$(awk '{print substr($1,17);}' /etc/machine-info)
+PS1='[\u@$prettyprompt \w\a]\$ '
+
+## sudo things
+alias sudo='sudo ' #this tells bash to check 1st and 2nd word of 'sudo' commands for alias expansion
+alias apt='sudo apt'
+alias chmod='sudo chmod'
+alias dnf='sudo dnf'
+alias now='sudo $(fc -ln -1)' #works like sudo !!
+alias reboot='sudo reboot'
+alias update='sudo yum update || sudo apt update && sudo apt upgrade'
+alias yum='sudo yum'
+
+## functions
+yeet() { sudo yum remove $1 || sudo apt remove $1 && sudo apt autoremove; }
+up() { cd $(eval printf '../'%.0s {1..$1}); } # moves up the (#) of directories you indicate
+senable() { sudo systemctl enable $1; }
+sstatus() { sudo systemctl status $1; }
+sstart() { sudo systemctl start $1; }
+sstop() { sudo systemctl stop $1; }
+grepp() { sudo ps -eo user,pid,ppid,%mem,%cpu,vsz,rss,stat,time,cmd | sudo grep $1 |sudo grep -v grep; } #puts topcpu type info for the (PID#) you indicate
+
+## random stuff
+alias ciq='sudo cloud-init query'
+alias ciqi='sudo cloud-init query instance_id'
+alias cl='clear'
+alias copmgen='sudo compgen'
+alias date='date -R'
+alias utc='date -u'
+alias diff='colordiff'
+alias listem='compgen -A function | grep -v "^_" && alias'
+alias mkdir='mkdir -pv'
+alias os='cat /etc/os-release'
+alias p3='python3'
+alias pth='echo -e ${PATH//:/\\n}'	
+alias reload='sudo bash -c "source $HOME/.bashrc" && sudo bash -c "source /root/.bashrc" && sudo bash -c "source /etc/profile.d/aliases.sh"'
+alias ungrep='|grep -v grep'
+
+## grep colors 
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias grep='grep --color=auto'
+alias pgrep='pgrep --color=auto'
+alias xzegrep='xzegrep --color=auto'
+alias xzfgrep='xzfgrep --color=auto'
+alias xzgrep='xzgrep --color=auto'
+alias zegrep='zegrep --color=auto'
+alias zfgrep='zfgrep --color=auto'
+alias zgrep='zgrep --color=auto'
+
+## be careful
+alias cp='sudo cp -i'
+alias ln='sudo ln -i'
+alias mv='sudo mv -i'
+alias rm='sudo rm -I --preserve-root'
+
+## list stuff 
+alias l.='sudo ls -dF .* --color=auto'
+alias ll='sudo ls -alF --color=auto'
+alias ls='sudo ls -F --color=auto'
+alias lsd='sudo ls -dlF */ --color=auto'
+
+## netstats 
+alias lports='sudo netstat -tulnp'
+alias ports='sudo netstat -tuanp'
+alias routes='sudo netstat -rn'
+alias tports='sudo netstat -tanp'
+
+## memory and CPU monitoring
+alias topcpu='sudo ps -eo user,pid,ppid,%mem,%cpu,vsz,rss,stat,time,cmd --sort=-%cpu,+pmem|head -11'
+alias topmem='sudo ps -eo user,pid,ppid,%mem,%cpu,vsz,rss,stat,time,cmd --sort=-%mem,+cpu|head -11'
+alias meminfo='sudo free -m -l -t'
+
+
+# Prompt - https://www.gnu.org/software/bash/manual/html_node/Controlling-the-Prompt.html
+#echo "alias grep='grep --color=auto'" >> /root/.bashrc
+#echo "alias grep='grep --color=auto'" >> /home/ec2-user/.bashrc
